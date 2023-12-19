@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<style>
+    /* Reset default margin and padding */
+    body, html {
+        margin: 0;
+        padding: 0;
+    }
+
+    .header {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center; /* Align items vertically in center */
+        padding: 20px;
+    }
+
+    .search-form input[type="search"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .search-form button {
+        padding: 8px 12px;
+        border: 1px solid #28a745;
+        border-radius: 4px;
+        background-color: #28a745;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-form button:hover {
+        background-color: #218838;
+    }
+
+    /* Other styles remain unchanged */
+</style>
+<body>
+<th:block th:include="navbar"></th:block>
+<h1>Borrowed Book</h1>
+<form th:action="@{/saveBorrowed}" th:object="${borrowed}" method="post">
+    <input type="hidden"  th:field="*{id}" placeholder="Book Name" >
+    <label>Choose Book</label>
+    <select th:field="*{books}">
+        <option name="books" th:each="type:${bookList}" th:text="${type.bookName}" th:value="${type.id}"> </option>
+    </select>
+    <label>Choose Student</label>
+    <select th:field="*{student}">
+        <option name="student" th:each="type:${studentList}" th:text="${type.studentName}" th:value="${type.regNo}"> </option>
+    </select>
+
+    <button type="submit">Save</button>
+</form>
+<label th:text="${outOfStock}"></label>
+<div class="search-form">
+    <form role="search" th:action="@{/pageSearchBorrow/1?sortField=books&amp;sortDir=asc}" method="post">
+        <input type="search" name="name" placeholder="Search" aria-label="Search">
+        <button type="submit">Search</button>
+    </form>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th><a th:href="@{'/pageBorrow/' + ${currentPage} + '?sortField=books&sortDir=' + ${reverseSortDir}}">Book Name</a></th>
+        <th><a th:href="@{'/pageBorrow/' + ${currentPage} + '?sortField=student&sortDir=' + ${reverseSortDir}}">Student Name</a></th>
+        <th><a th:href="@{'/pageBorrow/' + ${currentPage} + '?sortField=dateBorrowed&sortDir=' + ${reverseSortDir}}">Date Borrowed</a></th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="borroweds:${borrowedList}">
+        <td th:text="${borroweds.books.bookName}"></td>
+        <td th:text="${borroweds.student.studentName}"></td>
+        <td th:text="${borroweds.dateBorrowed}"></td>
+        <td th:text="${borroweds.dateToBeReturned != null ? borroweds.dateToBeReturned : 'Not yet returned'}"></td>
+        <td><a th:href="@{/returnBook/{id}(id=${borroweds.id})}">returns</a>
+<!--            <a th:href="@{/bookDelete/{id}(id=${borroweds.id})}">Delete</a></td>-->
+    </tr>
+    </tbody>
+</table>
+
+<div align="center">
+
+    <div th:if="${totalPages > 1}" class="text-center">
+        <div>
+            Total Rows: [[${totalItems}]]
+            <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                        <a th:if="${currentPage != i}" th:href="@{'/pageBorrow/' + ${i} + '?sortField=books&sortDir=' + ${reverseSortDir}}">[[${i}]]</a>
+                        <span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp;&nbsp;
+                    </span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/pageBorrow/' + ${currentPage + 1} + '?sortField=books&sortDir=' + ${reverseSortDir}}">Next</a>
+            <span th:unless="${currentPage < totalPages}">Next</span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/pageBorrow/' + ${totalPages} + '?sortField=books&sortDir=' + ${reverseSortDir}}">Last</a>
+            <span th:unless="${currentPage < totalPages}">Last</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

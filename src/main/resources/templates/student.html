@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<style>
+    /* Reset default margin and padding */
+    body, html {
+        margin: 0;
+        padding: 0;
+    }
+
+    .header {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center; /* Align items vertically in center */
+        padding: 20px;
+    }
+
+    .search-form input[type="search"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .search-form button {
+        padding: 8px 12px;
+        border: 1px solid #28a745;
+        border-radius: 4px;
+        background-color: #28a745;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-form button:hover {
+        background-color: #218838;
+    }
+
+    /* Other styles remain unchanged */
+</style>
+<body>
+<th:block th:include="navbar"></th:block>
+<h1>Students</h1>
+<form th:action="@{/studentSave}" th:object="${student}" method="post">
+    <input type="text" th:field="*{regNo}" placeholder="RegNo" required>
+    <input type="text" th:field="*{studentName}" placeholder="StudentName" required>
+    <input type="email" th:field="*{email}" placeholder="Email" required>
+    <input type="text" th:field="*{borrowed}" readonly>
+
+
+    <button type="submit">Save</button>
+</form>
+<div class="search-form">
+    <form role="search" th:action="@{/pageSearchStudent/1?sortField=studentName&amp;sortDir=asc}" method="post">
+        <input type="search" name="name" placeholder="Search" aria-label="Search">
+        <button type="submit">Search</button>
+    </form>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th><a th:href="@{'/pageStudent/' + ${currentPage} + '?sortField=regNo&sortDir=' + ${reverseSortDir}}">RegNo</a></th>
+        <th><a th:href="@{'/pageStudent/' + ${currentPage} + '?sortField=studentName&sortDir=' + ${reverseSortDir}}">Name</a></th>
+        <th><a th:href="@{'/pageStudent/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">Email</a></th>
+        <th><a th:href="@{'/pageStudent/' + ${currentPage} + '?sortField=borrowed&sortDir=' + ${reverseSortDir}}">Borrowed</a></th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="stud:${listUserInfos}">
+        <td th:text="${stud.regNo}"></td>
+        <td th:text="${stud.studentName}"></td>
+        <td th:text="${stud.email}"></td>
+        <td th:text="${stud.borrowed}"></td>
+        <td><a th:href="@{/studentUpdate/{id}(id=${stud.regNo})}">update</a>
+            <a th:href="@{/studentDelete/{id}(id=${stud.regNo})}">Delete</a></td>
+    </tr>
+    </tbody>
+</table>
+<div align="center">
+
+    <div th:if="${totalPages > 1}" class="text-center">
+        <div>
+            Total Rows: [[${totalItems}]]
+            <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                        <a th:if="${currentPage != i}" th:href="@{'/pageStudent/' + ${i} + '?sortField=studentName&sortDir=' + ${reverseSortDir}}">[[${i}]]</a>
+                        <span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp;&nbsp;
+                    </span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/pageStudent/' + ${currentPage + 1} + '?sortField=studentName&sortDir=' + ${reverseSortDir}}">Next</a>
+            <span th:unless="${currentPage < totalPages}">Next</span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/pageStudent/' + ${totalPages} + '?sortField=studentName&sortDir=' + ${reverseSortDir}}">Last</a>
+            <span th:unless="${currentPage < totalPages}">Last</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

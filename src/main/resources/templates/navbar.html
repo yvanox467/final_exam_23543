@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header>
+
+        <nav class="set">
+            <ul>
+                <li><a th:href="@{/bookPage}">Book</a></li>
+                <li><a th:href="@{/studentPage}">Student</a></li>
+                <li><a th:href="@{/typePage}">Type</a></li>
+                <li><a th:href="@{/borrowedBook}">Borrow</a></li>
+                <li><a th:href="@{/returnBook}">Return</a></li>
+                <li><a th:href="@{/admin/userInfoPage}">register</a></li>
+                <!-- Other menu items -->
+                <li><a th:href="@{/logout}">Logout</a>
+                </li>
+            </ul>
+        </nav>
+
+</header>
+</body>
+</html>

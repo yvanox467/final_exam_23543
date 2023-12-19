@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<style>
+    /* Reset default margin and padding */
+    body, html {
+        margin: 0;
+        padding: 0;
+    }
+
+    .header {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center; /* Align items vertically in center */
+        padding: 20px;
+    }
+
+    .search-form input[type="search"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .search-form button {
+        padding: 8px 12px;
+        border: 1px solid #28a745;
+        border-radius: 4px;
+        background-color: #28a745;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-form button:hover {
+        background-color: #218838;
+    }
+
+    /* Other styles remain unchanged */
+</style>
+<body>
+<header>
+
+        <nav class="set">
+            <ul>
+                <li><a th:href="@{/bookPage}">Book</a></li>
+                <li><a th:href="@{/studentPage}">Student</a></li>
+                <li><a th:href="@{/typePage}">Type</a></li>
+                <li><a th:href="@{/borrowedBook}">Borrow</a></li>
+                <li><a th:href="@{/returnBook}">Return</a></li>
+                <li><a th:href="@{/admin/userInfoPage}">register</a></li>
+                <!-- Other menu items -->
+                <li><a th:href="@{/logout}">Logout</a>
+                </li>
+            </ul>
+        </nav>
+
+</header>
+    <h1>List of Books</h1>
+<form th:action="@{/bookSave}" th:object="${book}" method="post">
+    <input type="text" id="bookName" th:field="*{bookName}" placeholder="Book Name" required>
+    <textarea id="description" th:field="*{description}" placeholder="Description" required></textarea>
+    <input type="text" id="author" th:field="*{author}" placeholder="Author" required>
+    <select th:field="*{type}" id="type">
+        <option th:each="type:${typeList}" th:text="${type.typeName}" th:value="${type.id}"> </option>
+    </select>
+    <input type="number" th:field="*{quantity}" id="quantity" placeholder="Quantity" required>
+    <input type="hidden" th:field="*{id}" >
+
+    <button type="submit" onclick="validateForm()">Save</button>
+</form>
+<label></label>
+<div class="search-form">
+    <form role="search" th:action="@{/pageSearchBook/1?sortField=bookName&amp;sortDir=asc}" method="post">
+        <input type="search" name="name" placeholder="Search" aria-label="Search">
+        <button type="submit">Search</button>
+    </form>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th><a th:href="@{'/pageBook/' + ${currentPage} + '?sortField=bookName&sortDir=' + ${reverseSortDir}}">Name</a></th>
+        <th><a th:href="@{'/pageBook/' + ${currentPage} + '?sortField=author&sortDir=' + ${reverseSortDir}}">Author</a></th>
+        <th><a th:href="@{'/pageBook/' + ${currentPage} + '?sortField=description&sortDir=' + ${reverseSortDir}}">Description</a></th>
+        <th><a th:href="@{'/pageBook/' + ${currentPage} + '?sortField=type&sortDir=' + ${reverseSortDir}}">Type</a></th>
+        <th><a th:href="@{'/pageBook/' + ${currentPage} + '?sortField=quantity&sortDir=' + ${reverseSortDir}}">Quantity</a></th>
+        <th><a th:href="@{'/pageBook/' + ${currentPage} + '?sortField=borrowed&sortDir=' + ${reverseSortDir}}">Borrowed</a></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book:${listUserInfos}">
+        <td th:text="${book.bookName}"></td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.description}"></td>
+        <td th:text="${book.type.typeName}"></td>
+        <td th:text="${book.quantity}"></td>
+        <td th:text="${book.borrowed}"></td>
+        <td><a th:href="@{/bookUpdate/{id}(id=${book.id})}">update</a>
+            <a th:href="@{/bookDelete/{id}(id=${book.id})}">Delete</a></td>
+    </tr>
+    </tbody>
+</table>
+<div align="center">
+
+    <div th:if="${totalPages > 1}" class="text-center">
+        <div>
+            Total Rows: [[${totalItems}]]
+            <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                        <a th:if="${currentPage != i}" th:href="@{'/pageBook/' + ${i} + '?sortField=bookName&sortDir=' + ${reverseSortDir}}">[[${i}]]</a>
+                        <span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp;&nbsp;
+                    </span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/pageBook/' + ${currentPage + 1} + '?sortField=bookName&sortDir=' + ${reverseSortDir}}">Next</a>
+            <span th:unless="${currentPage < totalPages}">Next</span>
+
+            <a th:if="${currentPage < totalPages}" th:href="@{'/pageBook/' + ${totalPages} + '?sortField=bookName&sortDir=' + ${reverseSortDir}}">Last</a>
+            <span th:unless="${currentPage < totalPages}">Last</span>
+        </div>
+    </div>
+
+</div>
+<script>
+    function validateForm() {
+        var bookName = document.getElementById("bookName").value;
+        var description = document.getElementById("description").value;
+        var author = document.getElementById("author").value;
+        var type = document.getElementById("type").value;
+        var quantity = document.getElementById("quantity").value;
+
+        // Perform validation
+        if (bookName.trim() === '') {
+            alert("Please enter Book Name");
+            return false;
+        }
+
+        if (author.trim() === '') {
+            alert("Please enter Author");
+            return false;
+        }
+
+        if (type === '') {
+            alert("Please select Type");
+            return false;
+        }
+
+        if (isNaN(quantity) || quantity.trim() === '') {
+            alert("Please enter a valid Quantity");
+            return false;
+        }
+
+        // If all validations pass, submit the form
+        // document.getElementById("bookForm").submit();
+        form.submit();
+    }
+</script>
+</body>
+</html>

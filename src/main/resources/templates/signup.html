@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container{
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    form {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333333;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333333;
+    }
+
+    input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #4caf50;
+        color: #ffffff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 8px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    button[type="button"] {
+        background-color: #2196f3;
+    }
+
+    button[type="button"]:hover {
+        background-color: #0b7dda;
+    }
+
+
+</style>
+<body>
+<th:block th:include="homeNav"></th:block>
+<div class="container">
+  <form th:action="@{/admin/new}" th:object="${userinfo}" method="post">
+      <h2>Signup</h2>
+      <input type="text" th:field="*{name}" placeholder="name" required>
+      <input type="email" th:field="*{email}" placeholder="email" name="email" required>
+      <input type="password" th:field="*{password}" placeholder="password" required>
+      <select th:field="*{role}" hidden>
+          <option value="USER">USER</option>
+      </select>
+      <button type="submit">Submit</button>
+  </form>
+</div>
+</body>
+</html>

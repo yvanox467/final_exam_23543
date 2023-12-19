@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<th:block th:include="navbar"></th:block>
+<h1>Returned Books</h1>
+<form th:action="@{/saveReturn}" th:object="${borrowed}" method="post">
+    <input type="hidden" th:field="*{id}" name="ida" >
+    <select th:field="*{books}">
+        <option name="books" th:each="type:${bookList}" th:text="${type.bookName}" th:value="${type.id}"> </option>
+    </select>
+    <select th:field="*{student}">
+        <option name="student" th:each="type:${studentList}" th:text="${type.studentName}" th:value="${type.regNo}"> </option>
+    </select>
+
+    <button type="submit">Save</button>
+</form>
+<label th:text="${outOfStock}"></label>
+<table>
+    <thead>
+    <tr>
+        <th>Book Name</th>
+        <th>Student Name</th>
+        <th>Date borrowed</th>
+        <th>Date returned</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="borroweds:${borrowedList}">
+        <td th:text="${borroweds.books.bookName}"></td>
+        <td th:text="${borroweds.student.studentName}"></td>
+        <td th:text="${borroweds.dateBorrowed}"></td>
+        <td th:text="${borroweds.dateToBeReturned != null ? borroweds.dateToBeReturned : 'Not yet returned'}"></td>
+        <td><a th:href="@{/returnBook/{id}(id=${borroweds.id})}">returns</a>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
